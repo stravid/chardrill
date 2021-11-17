@@ -33,11 +33,11 @@ fn main() {
                 break;
             }
             key => {
-                actual_presses = actual_presses + 1;
+                actual_presses += 1;
 
                 if key == termion::event::Key::Char(sequence[index]) {
-                    index = index + 1;
-                    target_presses = target_presses + 1;
+                    index += 1;
+                    target_presses += 1;
                 }
 
                 if index == sequence.len() {
@@ -56,22 +56,17 @@ fn print_result(start: &Instant, target_presses: usize, actual_presses: usize) {
     let end = Instant::now();
     let duration = end.duration_since(*start);
     clear();
-    println!("Result");
-    println!("\r");
-    println!("Duration: {} seconds\r", duration.as_secs());
+    println!("{} seconds\r", duration.as_secs());
 
     let percentage = match target_presses {
         0 => actual_presses as f32 * 100.0,
-        _ => (actual_presses as f32 / target_presses as f32 - 1.0) * 100.0
+        _ => (actual_presses as f32 / target_presses as f32 - 1.0) * 100.0,
     };
 
-    println!(
-        "Error rate: {} %",
-        percentage
-    );
+    println!("{} % error rate", percentage);
 }
 
-fn print_characters(characters: &Vec<char>, highlight_index: usize) {
+fn print_characters(characters: &[char], highlight_index: usize) {
     clear();
 
     for (index, character) in characters.iter().enumerate() {
