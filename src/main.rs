@@ -2,7 +2,7 @@ use rand::seq::SliceRandom;
 use rand::thread_rng;
 use std::io;
 use std::io::{stdout, Stdout, Write};
-use std::time::{Duration, Instant};
+use std::time::Instant;
 use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::{IntoRawMode, RawTerminal};
@@ -75,7 +75,7 @@ fn print_characters(characters: &Vec<char>, highlight_index: usize) {
     clear();
 
     for (index, character) in characters.iter().enumerate() {
-        if (index == highlight_index) {
+        if index == highlight_index {
             print!(
                 "{}{}{}",
                 termion::color::Fg(termion::color::Black),
