@@ -72,16 +72,16 @@ fn print_characters(characters: &[char], highlight_index: usize) {
     for (index, character) in characters.iter().enumerate() {
         if index == highlight_index {
             print!(
-                "{}{}{}",
+                "{}{}{}{}{}",
                 termion::color::Fg(termion::color::Black),
                 termion::color::Bg(termion::color::White),
-                character
+                character,
+                termion::color::Fg(termion::color::Reset),
+                termion::color::Bg(termion::color::Reset),
             );
         } else {
             print!(
-                "{}{}{}",
-                termion::color::Fg(termion::color::White),
-                termion::color::Bg(termion::color::Black),
+                "{}",
                 character
             );
         }
