@@ -3,9 +3,12 @@ use rand::thread_rng;
 use std::io;
 use std::io::{stdout, Stdout, Write};
 use std::time::Instant;
-use termion::event::Key;
-use termion::input::TermRead;
-use termion::raw::{IntoRawMode, RawTerminal};
+use crossterm::cursor::{Hide, MoveTo};
+use crossterm::event::{Event, KeyCode, read};
+use crossterm::event::Event::Key;
+use crossterm::{execute, style, terminal};
+use crossterm::terminal::{Clear, ClearType};
+use crossterm::style::{style, Color, Attribute, Stylize};
 
 fn main() {
     let set = vec![
@@ -22,20 +25,25 @@ fn main() {
 
     sequence.shuffle(&mut thread_rng());
 
-    let _stdout: RawTerminal<Stdout> = stdout().into_raw_mode().unwrap();
+    let t = terminal::enable_raw_mode();
+    match t {
+        Ok(_) => {}
+        Err(error) => {panic!("terminal error: {:?}", error)}
+    }
 
     loop {
         print_characters(&sequence, index);
+
         let key = get_next_key();
 
         match key {
-            Key::Esc => {
+            KeyCode::Esc => {
                 break;
             }
-            key => {
+            KeyCode::Char(char) => {
                 actual_presses += 1;
 
-                if key == termion::event::Key::Char(sequence[index]) {
+                if char == sequence[index] {
                     index += 1;
                     target_presses += 1;
                 }
@@ -46,6 +54,7 @@ fn main() {
 
                 print_characters(&sequence, index);
             }
+            _ => {}
         }
     }
 
@@ -71,48 +80,42 @@ fn print_characters(characters: &[char], highlight_index: usize) {
 
     for (index, character) in characters.iter().enumerate() {
         if index == highlight_index {
-            print!(
-                "{}{}{}{}{}",
-                termion::color::Fg(termion::color::Black),
-                termion::color::Bg(termion::color::White),
-                character,
-                termion::color::Fg(termion::color::Reset),
-                termion::color::Bg(termion::color::Reset),
+            execute!(
+                stdout(),
+                style::SetForegroundColor(Color::Black),
+                style::SetBackgroundColor(Color::White),
+                style::Print(character),
+                style::ResetColor,
             );
         } else {
-            print!(
-                "{}",
-                character
+            execute!(
+                stdout(),
+                style::SetForegroundColor(Color::White),
+                style::SetBackgroundColor(Color::Black),
+                style::Print(character),
+                style::ResetColor,
             );
         }
     }
-
-    flush();
 }
 
 fn clear() {
-    print!(
-        "{}{}{}",
-        termion::clear::All,
-        termion::cursor::Hide,
-        termion::cursor::Goto(1, 1)
+    execute!(
+        stdout(),
+        Clear(ClearType::All),
+        Hide,
+        MoveTo(0, 0)
     );
-    flush();
 }
 
-fn flush() {
-    match io::stdout().flush() {
-        Ok(_) => {}
-        Err(error) => println!("Terminal Error: {}", error),
-    }
-}
-
-fn get_next_key() -> Key {
-    match io::stdin().lock().keys().next() {
-        None => panic!("Terminal Error: No key pressed"),
-        Some(key) => match key {
-            Ok(key) => key,
-            Err(error) => panic!("Terminal Error: {}", error),
-        },
+fn get_next_key() -> KeyCode {
+    loop {
+        match read() {
+                Ok(event) => match event {
+                    Key(key) => { return key.code }
+                    _ => {}
+                },
+                Err(error) => panic!("Terminal Error: {}", error),
+        }
     }
 }
