@@ -31,9 +31,9 @@ fn main() {
         Err(error) => {panic!("terminal error: {:?}", error)}
     }
 
-    loop {
-        print_characters(&sequence, index);
+    print_characters(&sequence, index);
 
+    loop {
         let key = get_next_key();
 
         match key {
@@ -46,13 +46,12 @@ fn main() {
                 if char == sequence[index] {
                     index += 1;
                     target_presses += 1;
+                    print_characters(&sequence, index);
                 }
 
                 if index == sequence.len() {
                     break;
                 }
-
-                print_characters(&sequence, index);
             }
             _ => {}
         }
