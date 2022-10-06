@@ -3,5 +3,4 @@
 - Flackern entfernen in dem nicht immer alles neu gezeichnet wird
 - Terminal Farben erkennen so das nur der Cursor einen anderen Hintergrund hat
 - Die maximale Breite von Chardrill kontrollieren lassen und nicht dem Terminal
-- `main` wird erst beendet wenn man nochmal eine Taste gedrückt hat
 - Option noch eine Runde zu machen

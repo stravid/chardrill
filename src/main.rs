@@ -59,6 +59,9 @@ fn main() {
     }
 
     print_result(&start, target_presses, actual_presses);
+
+    // Wait for a keypress before exiting the program
+    get_next_key();
 }
 
 fn print_result(start: &Instant, target_presses: usize, actual_presses: usize) {
